@@ -6,11 +6,14 @@ package com.spkkaryawan.karyawan.dao;
 
 import com.spkkaryawan.karyawan.model.Karyawan;
 import com.spkkaryawan.login.model.Login;
+import com.spkkaryawan.parameter.model.Parameter;
+import com.spkkaryawan.parameter.model.ParameterDetail;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,7 +98,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
     public Karyawan findById(Long karyawanId) throws SQLException {
         Karyawan karyawan = null;
         
-        String sql = "select * from tabel_karyawan where karyawan_no = ?";
+        String sql = "select * from tabel_karyawan where karyawan_id = ?";
         
         pst = con.prepareStatement(sql);
         pst.setLong(1, karyawanId);
@@ -105,8 +108,9 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
             karyawan.setKaryawanNo(rs.getString("karyawan_no"));
             karyawan.setKaryawanName(rs.getString("nama"));
             karyawan.setAddress(rs.getString("address"));
-            karyawan.setBirthPlace(getString("birth_place"));
-            karyawan.setBirthDate(getDate("birth_date")));
+            karyawan.setBirthPlace(rs.getString("birth_place"));
+            karyawan.setBirthDate(rs.getDate("birth_date"));
+            karyawan.setGender(new ParameterDetail(rs.getString("detail_code"), new Parameter(rs.getString("param_code")), rs.getString("param_value")));
         }
         
         return karyawan;
@@ -114,17 +118,66 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
 
     @Override
     public Karyawan findByUk(String karyawanNo) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+      
+         Karyawan karyawan = null;
+        
+        String sql = "select * from tabel_karyawan where karyawan_no = ?";
+        
+        pst = con.prepareStatement(sql);
+        pst.setString(1, karyawanNo);
+        
+        rs = pst.executeQuery();
+        if(rs.next()) {
+            karyawan = new Karyawan();
+             karyawan.setKaryawanNo(rs.getString("karyawan_no"));
+            karyawan.setKaryawanName(rs.getString("nama"));
+            karyawan.setAddress(rs.getString("address"));
+            karyawan.setBirthPlace(rs.getString("birth_place"));
+            karyawan.setBirthDate(rs.getDate("birth_date"));
+            karyawan.setGender(new ParameterDetail(rs.getString("detail_code"), new Parameter(rs.getString("param_code")), rs.getString("param_value")));
+        }
+        
+        return karyawan;
     }
+    
 
     @Override
     public List<Karyawan> search() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       
+        String sql = "select * from tabel_karyawan";
+        List<Karyawan> result = new ArrayList<Karyawan>();
+        
+        pst = con.prepareStatement(sql);
+        
+        rs = pst.executeQuery();
+        
+        while(rs.next()) {
+            Karyawan karyawan = new Karyawan();
+            karyawan.setKaryawanNo(rs.getString("karyawan_no"));
+            karyawan.setKaryawanName(rs.getString("nama"));
+            karyawan.setAddress(rs.getString("address"));
+            karyawan.setBirthPlace(rs.getString("birth_place"));
+            karyawan.setBirthDate(rs.getDate("birth_date"));
+            karyawan.setGender(new ParameterDetail(rs.getString("detail_code"), new Parameter(rs.getString("param_code")), rs.getString("param_value")));
+            
+            result.add(karyawan);
+            
+        }
+        
+        return result;
     }
 
     @Override
     public int deleteChild(Long karyawanId) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int result =0;
+        
+        String sql = "delete from login where karyawan_id = ?";
+        
+        pst = con.prepareStatement(sql);
+        
+        result = pst.executeUpdate();
+        
+        return result;
     }
 
   

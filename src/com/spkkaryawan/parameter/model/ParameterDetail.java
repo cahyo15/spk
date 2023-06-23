@@ -24,7 +24,13 @@ public class ParameterDetail {
         this.detailName = detailName;
         this.paramValue = paramValue;
     }
-    
+
+       public ParameterDetail(String detailCode, Parameter paramCode, String detailName) {
+        this.detailCode = detailCode;
+        this.paramCode = paramCode;
+        this.detailName = detailName;
+       
+    }
     
 
     public String getDetailCode() {
