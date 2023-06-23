@@ -48,6 +48,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
            
            result = pst.executeUpdate();
            
+           pst.close();
         
         return result;
     }
@@ -76,6 +77,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
         
         result = pst.executeUpdate();
         
+         pst.close();
         return result;
     }
 
@@ -91,6 +93,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
         
         result = pst.executeUpdate();
         
+         pst.close();
         return result;
     }
 
@@ -112,7 +115,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
             karyawan.setBirthDate(rs.getDate("birth_date"));
             karyawan.setGender(new ParameterDetail(rs.getString("detail_code"), new Parameter(rs.getString("param_code")), rs.getString("param_value")));
         }
-        
+         pst.close();
         return karyawan;
     }
 
@@ -136,7 +139,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
             karyawan.setBirthDate(rs.getDate("birth_date"));
             karyawan.setGender(new ParameterDetail(rs.getString("detail_code"), new Parameter(rs.getString("param_code")), rs.getString("param_value")));
         }
-        
+         pst.close();
         return karyawan;
     }
     
@@ -164,6 +167,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
             
         }
         
+         pst.close();
         return result;
     }
 
@@ -177,6 +181,7 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
         
         result = pst.executeUpdate();
         
+         pst.close();
         return result;
     }
 
