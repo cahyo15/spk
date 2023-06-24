@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="spkkaryawan">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/spkkaryawan.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
