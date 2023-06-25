@@ -27,6 +27,10 @@ public class Parameter {
     }
     
     
+    public Parameter(String paramCode) {
+        this.paramCode = paramCode;
+    }
+    
     
     private List<ParameterDetail> details = new ArrayList<ParameterDetail>();
 
