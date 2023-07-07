@@ -1,7 +1,11 @@
 package spkkaryawan;
 
+import connection.Koneksi;
 import java.awt.Color;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,6 +22,10 @@ public class form_login
         extends javax.swing.JFrame {
     
 //    private Connection conn =  new Koneksi().getKoneksi();
+    
+    Connection conn = Koneksi.getDatabase();
+    ResultSet rs = null;
+    PreparedStatement ps = null;
 
     int xx, xy;  
     /**
@@ -50,6 +58,7 @@ void bersih(){
         t_password = new javax.swing.JTextField();
         t_login = new javax.swing.JButton();
         t_register = new javax.swing.JButton();
+        pass = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -107,8 +116,15 @@ void bersih(){
         });
 
         t_login.setText("Login");
+        t_login.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                t_loginMouseClicked(evt);
+            }
+        });
 
         t_register.setText("Register");
+
+        pass.setText("jPasswordField1");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -127,11 +143,14 @@ void bersih(){
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(211, 211, 211)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(t_password, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(t_password, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(t_username, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(t_login, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(t_register, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 23, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -146,7 +165,9 @@ void bersih(){
                 .addGap(18, 18, 18)
                 .addComponent(t_username, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(t_password, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pass)
+                    .addComponent(t_password, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(t_login, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -216,6 +237,28 @@ void bersih(){
         // TODO add your handling code here:
     }//GEN-LAST:event_t_passwordActionPerformed
 
+    private void t_loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_t_loginMouseClicked
+            
+        String sql = "SELECT * FROM login WHERE username=? AND password=?";    
+        try {
+            
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, t_username.getText()); 
+            ps.setString(2, String.valueOf(pass.getPassword()));
+            rs = ps.executeQuery();
+            
+            if(rs.next()){
+                        homePage HE=new homePage();
+                        HE.setLocationRelativeTo(null);
+                        HE.setVisible(true);
+                        dispose();
+            }else
+                JOptionPane.showMessageDialog(null, "Login Gagal");
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }//GEN-LAST:event_t_loginMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -268,6 +311,7 @@ void bersih(){
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPasswordField pass;
     private javax.swing.JLabel t_iconadmin;
     private javax.swing.JButton t_login;
     private javax.swing.JTextField t_password;
