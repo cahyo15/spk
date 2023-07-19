@@ -16,7 +16,7 @@ import utility.ServiceException;
 public interface KaryawanService {
     
     
-    int save(Karyawan karyawan) throws ServiceException;
+    void save(Karyawan karyawan) throws ServiceException;
     int edit(Karyawan karyawan) throws ServiceException;
     int delete(String karyawanNo) throws ServiceException;
     

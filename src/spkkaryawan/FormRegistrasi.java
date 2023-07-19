@@ -4,19 +4,114 @@
  */
 package spkkaryawan;
 
+import com.spkkaryawan.karyawan.model.Karyawan;
+import com.spkkaryawan.karyawan.service.KaryawanService;
+import com.spkkaryawan.karyawan.service.KaryawanServiceImpl;
+import com.spkkaryawan.login.model.Login;
+import com.spkkaryawan.parameter.model.ParameterDetail;
+import connection.Koneksi;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import utility.ServiceException;
 
 /**
  *
  * @author ikayu
  */
-public class FormRegistrasi extends javax.swing.JFrame {
+public class FormRegistrasi
+        extends javax.swing.JFrame {
 
-    /**
-     * Creates new form FormRegistrasi
-     */
+    private List<ParameterDetail> genders;
+    private ParameterDetail selectedGender;
+    private PreparedStatement pst;
+    private ResultSet rs;
+    private Connection con = Koneksi.getDatabase();
+    private javax.swing.ButtonGroup radioButtonGroup;
+    private KaryawanService karyawanService = new KaryawanServiceImpl();
+
     public FormRegistrasi() {
         initComponents();
+radioBtn.setLayout(new java.awt.FlowLayout());
+        radioButtonGroup = new javax.swing.ButtonGroup();
+        
+        fillRadioButton();
+    }
+
+    private void fillRadioButton() {
+        genders = getGender(); // Simpan daftar genders ke variabel genders
+
+        for (ParameterDetail gender : genders) {
+            JRadioButton radioButton = new JRadioButton(gender.getDetailName());
+            radioButton.setActionCommand(gender.getDetailCode());
+            radioButtonGroup.add(radioButton);
+
+            radioButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JRadioButton selectedRadioButton = (JRadioButton) e.
+                            getSource();
+                    String selectedCode = selectedRadioButton.getActionCommand();
+
+                    // Cari gender berdasarkan selectedCode dan simpan ke selectedGender
+                    for (ParameterDetail gender : genders) {
+                        if (gender.getDetailCode().
+                                equals(selectedCode)) {
+                            selectedGender = gender;
+                            break;
+                        }
+                    }
+
+                    System.out.println("Selected Code: " + selectedCode);
+                    System.out.println("Selected Name: " + selectedGender.
+                            getDetailName());
+
+                    // Lakukan sesuatu dengan selectedCode dan selectedName
+                }
+            });
+            
+             int verticalSpacing = 0; // Jarak vertikal yang diinginkan
+        int horizontalSpacing = 20; // Jarak horizontal yang diinginkan
+        radioButton.setBorder(BorderFactory.createEmptyBorder(verticalSpacing, horizontalSpacing, verticalSpacing, horizontalSpacing));
+        
+        radioBtn.add(radioButton);
+        }
+    }
+
+    public List<ParameterDetail> getGender() {
+        List<ParameterDetail> genders = new ArrayList<>();
+
+        try {
+            String sql = "select detai_code, detail_name from parameter_detail where param_code = 'gender'";
+
+            pst = con.prepareStatement(sql);
+
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                ParameterDetail gender = new ParameterDetail();
+                gender.setDetailCode(rs.getString("detai_code"));
+                gender.setDetailName(rs.getString("detail_name"));
+                genders.add(gender);
+            }  
+        } catch (SQLException ex) {
+            Logger.getLogger(FormRegistrasi.class.getName()).
+                    log(Level.SEVERE,
+                            null,
+                            ex);
+        }
+        return genders;
     }
 
     /**
@@ -44,8 +139,6 @@ public class FormRegistrasi extends javax.swing.JFrame {
         alamat = new javax.swing.JTextArea();
         noHp = new javax.swing.JTextField();
         birthPlace = new javax.swing.JTextField();
-        male = new javax.swing.JRadioButton();
-        female = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -60,6 +153,8 @@ public class FormRegistrasi extends javax.swing.JFrame {
         password = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         password2 = new javax.swing.JTextField();
+        radioBtn = new javax.swing.JPanel();
+        birthDate = new com.toedter.calendar.JDateChooser();
 
         jLabel12.setText("jLabel12");
 
@@ -166,6 +261,19 @@ public class FormRegistrasi extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel15.setText("Password");
 
+        radioBtn.setBackground(new java.awt.Color(171, 209, 198));
+
+        javax.swing.GroupLayout radioBtnLayout = new javax.swing.GroupLayout(radioBtn);
+        radioBtn.setLayout(radioBtnLayout);
+        radioBtnLayout.setHorizontalGroup(
+            radioBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        radioBtnLayout.setVerticalGroup(
+            radioBtnLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 28, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -211,13 +319,11 @@ public class FormRegistrasi extends javax.swing.JFrame {
                             .addComponent(email)
                             .addComponent(userName)
                             .addComponent(password)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(male)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(female))
                             .addComponent(birthPlace)
                             .addComponent(jScrollPane1)
-                            .addComponent(password2))
+                            .addComponent(password2)
+                            .addComponent(radioBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(birthDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -250,8 +356,8 @@ public class FormRegistrasi extends javax.swing.JFrame {
                     .addComponent(jLabel15)
                     .addComponent(password2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(2, 2, 2)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(noKaryawan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,19 +375,20 @@ public class FormRegistrasi extends javax.swing.JFrame {
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(birthPlace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(birthDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(male)
-                    .addComponent(female))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                    .addComponent(radioBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
                     .addComponent(jButton3)
                     .addComponent(jButton4))
-                .addGap(18, 18, 18))
+                .addGap(110, 110, 110))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -307,11 +414,46 @@ public class FormRegistrasi extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel9MouseClicked
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
-       this.setExtendedState(JFrame.ICONIFIED);
+        this.setExtendedState(JFrame.ICONIFIED);
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+       if(selectedGender == null) {
+           JOptionPane.showMessageDialog(null,
+                   "Gender Harus Diisi");
+       } else {
+           try {
+               Karyawan karyawan = new Karyawan();
+               List<Login> logins = new ArrayList<Login>();
+               Login login = new Login();
+               karyawan.setKaryawanNo(noKaryawan.getText());
+               karyawan.setKaryawanName(namaK.getText());
+               karyawan.setNoHp(noHp.getText());
+               karyawan.setAddress(alamat.getText());
+               karyawan.setBirthPlace(birthPlace.getText());
+               karyawan.setBirthDate(birthDate.getDate());
+               karyawan.setGender(new ParameterDetail(selectedGender.getDetailCode()));
+               login.setEmail(email.getText());
+               login.setUsername(userName.getText());
+               login.setPassword(password.getText());
+               login.setPassword2(password2.getText());
+               
+               logins.add(login);
+               
+               karyawan.setLogins(logins);
+               
+               karyawanService.save(karyawan);
+               JOptionPane.showMessageDialog(null, "Berhasil disimpan");
+               
+           } catch (ServiceException ex) {
+               ex.printStackTrace();
+               Logger.getLogger(FormRegistrasi.class.getName()).
+                       log(Level.SEVERE,
+                       null,
+                       ex);
+               JOptionPane.showMessageDialog(null, ex.getMessage());
+           }
+       }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void noKaryawanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noKaryawanActionPerformed
@@ -344,20 +486,33 @@ public class FormRegistrasi extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.
+                    getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).
+                    log(java.util.logging.Level.SEVERE,
+                            null,
+                            ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).
+                    log(java.util.logging.Level.SEVERE,
+                            null,
+                            ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).
+                    log(java.util.logging.Level.SEVERE,
+                            null,
+                            ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormRegistrasi.class.getName()).
+                    log(java.util.logging.Level.SEVERE,
+                            null,
+                            ex);
         }
         //</editor-fold>
 
@@ -371,9 +526,9 @@ public class FormRegistrasi extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea alamat;
+    private com.toedter.calendar.JDateChooser birthDate;
     private javax.swing.JTextField birthPlace;
     private javax.swing.JTextField email;
-    private javax.swing.JRadioButton female;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -395,12 +550,12 @@ public class FormRegistrasi extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JRadioButton male;
     private javax.swing.JTextField namaK;
     private javax.swing.JTextField noHp;
     private javax.swing.JTextField noKaryawan;
     private javax.swing.JTextField password;
     private javax.swing.JTextField password2;
+    private javax.swing.JPanel radioBtn;
     private javax.swing.JTextField userName;
     // End of variables declaration//GEN-END:variables
 }

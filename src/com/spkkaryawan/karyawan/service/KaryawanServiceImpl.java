@@ -8,6 +8,9 @@ package com.spkkaryawan.karyawan.service;
 import com.spkkaryawan.karyawan.dao.KaryawanDAO;
 import com.spkkaryawan.karyawan.dao.KaryawanDAOImpl;
 import com.spkkaryawan.karyawan.model.Karyawan;
+import com.spkkaryawan.login.model.Login;
+import com.spkkaryawan.login.repository.LoginImpl;
+import com.spkkaryawan.login.repository.LoginRepository;
 import connection.Koneksi;
 import java.util.List;
 import utility.ServiceException;
@@ -26,21 +29,53 @@ public class KaryawanServiceImpl implements KaryawanService {
     
     private Connection con;
     private final KaryawanDAO karyawanDAO = new KaryawanDAOImpl();
+    private final LoginRepository loginDAO = new LoginImpl();
 
     @Override
-    public int save(Karyawan karyawan)
+    public void save(Karyawan karyawan)
             throws ServiceException {
-       int result = 0;
+       int resultKaryawan = 0;
         try {
             
             con = Koneksi.getDatabase();
             karyawanDAO.connection(con);
-            
-            result = karyawanDAO.save(karyawan);
+            loginDAO.connection(con);
             
             con.setAutoCommit(false);
-            con.commit();
+           
+            resultKaryawan = karyawanDAO.save(karyawan);
+            
+//            
+//            
+             int resultLogin = 0;
+                
+            if (resultKaryawan > 0) {
+                         for(Login login : karyawan.getLogins()) {
+                Login save = new Login();
+                save.setEmail(login.getEmail());
+                save.setUsername(login.getUsername());
+               
+                if(!login.getPassword().equals(login.getPassword2())) {
+                    throw new ServiceException("Password tidak sama");
+                }
+                save.setPassword(login.getPassword());
+                save.setStatus("off");
+                save.setRole("admin");
+                
+                resultLogin = loginDAO.save(save);
+            }
+              
+            }
+            
+            if (resultKaryawan > 0 && resultLogin > 0) {
+                con.commit();
             con.setAutoCommit(true);
+            } else {
+                 throw new ServiceException("Can't insert data employed");
+            }
+//              con.commit();
+//            con.setAutoCommit(true);
+            
         }catch(SQLException e) {
             
            try {
@@ -68,7 +103,7 @@ public class KaryawanServiceImpl implements KaryawanService {
            }
         }
         
-        return result;
+//        return result;
     }
 
     @Override

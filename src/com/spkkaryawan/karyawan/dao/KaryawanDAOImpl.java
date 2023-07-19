@@ -42,9 +42,14 @@ public class KaryawanDAOImpl implements KaryawanDAO, Serializable {
            pst = con.prepareStatement(sql);
            pst.setString(1, karyawan.getKaryawanNo());
            pst.setString(2, karyawan.getKaryawanName());
-           pst.setString(3, karyawan.getBirthPlace());
-           pst.setDate(4, new java.sql.Date(karyawan.getBirthDate().getTime()));
-           pst.setString(5, karyawan.getGender().getDetailCode());
+           pst.setString(3,
+                karyawan.getNoHp());
+            pst.setString(4, karyawan.getAddress());
+            
+           pst.setString(5, karyawan.getBirthPlace());
+
+           pst.setDate(6, new java.sql.Date(karyawan.getBirthDate().getTime()));
+           pst.setString(7, karyawan.getGender().getDetailCode());
            
            result = pst.executeUpdate();
            

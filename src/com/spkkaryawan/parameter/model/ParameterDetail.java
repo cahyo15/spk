@@ -31,6 +31,10 @@ public class ParameterDetail {
         this.detailName = detailName;
        
     }
+
+    public ParameterDetail(String detailCode) {
+        this.detailCode = detailCode;
+    }
     
 
     public String getDetailCode() {
